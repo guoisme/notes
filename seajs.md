@@ -42,6 +42,7 @@ define(function(require,exports){
 })
 ```
 + require.async(id,callback异步加载
+```
 define(function(require,exports,module){
 	//异步加载一个模块，在加载完成时，执行回调
 	require.async('./b',function(b){b.dosomethine()});
@@ -51,8 +52,11 @@ define(function(require,exports,module){
 		d.dosomethine()
 	})
 });
+```
 注意：require是同步往下执行，require.async是异步回调执行。require.asymc一般用来加载可延迟异步加载的模块
-+ require.resolve(id)路径解析机制分析并返回模块路径。该函数不会加载模块，只返回解析后的绝对路径
+
++  require.resolve(id)路径解析机制分析并返回模块路径。该函数不会加载模块，只返回解析后的绝对路径
+
 ```
 define(function(require,exports){
 	console.log(require.resolve('./b'));
@@ -97,7 +101,7 @@ define(function(require,exports,module){
 	}
 })
 ``` 
-tip:exports仅仅是module.exports的一个引用，在factory内部给exports重新赋值时，并不会改变module.exports的值，因此给exports赋值无效，不能用来更改模块接口。
+提示:exports仅仅是module.exports的一个引用，在factory内部给exports重新赋值时，并不会改变module.exports的值，因此给exports赋值无效，不能用来更改模块接口。
 + module是对象，存储了与当前模块相关联的一些属性和方法
 1. module.id String类型，模块的唯一标识
 ```
@@ -113,6 +117,7 @@ define(function(requrie,exports,module){
 一般情况下（没有在define中手写id参数时），module.id的值就是module.uri
 + module.dependencies Array类型，表示当前模块的依赖
 + module.exports Object类型，当前模块对外提供的接口
+
 传给factory构造方法的exports参数是module.exports对象的一个引用。只通过exports参数来提供接口，有时取法满足开发者所有需求。比如当模块的接口是某个类的实例，需要通过module.exports实现：
 ```
 define(function(require,exports,module){
@@ -172,6 +177,7 @@ require('my-'+'module')
 require('my-module')
 ```
 4. 关于动态依赖
+
 有时会希望可以使用**require**进行条件加载：
 ```
 if(todayIsWeekend)
@@ -192,8 +198,10 @@ define('xxx/1.0.0/a,['./b'],function(require,exports){
 })
 ```
 2. 压缩操作
+
 经过提取后，构建工具可以调用任何js压缩工具压缩，require也可以被压缩成任意字符
 + 为什么要提取id
+
 默认情况下，书写CMD模块，不需要手写id
 ```
 //a.js
@@ -224,8 +232,10 @@ define(function(require,exports){
 });
 ```
 Sea.js运行define时，接受factory参数，可通过factory.toString()拿到源码，再通过正则匹配require的方式得到依赖信息。依赖信息是一个数组，比如上面的a.js依赖数组是['./b,./c'];
+
 由于Sea,js的这个实现原理，使得书写CMD模块时，必须遵守require书写约定，否则获取不到依赖数组，Sea.js也就无法正确运行。
 + 为什么要提取依赖数组dependencies
+
 为保证压缩工具可以随意压缩代码，构建工具在提取id字符串时，同时也会提取dependencies数组。提取过后的代码变成：
 ```
 define('xxx/1.0.0/a',['./b','./c'],function(require,exports){
